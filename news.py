@@ -19,10 +19,11 @@ class statement(object):
 		else:
 			str1 = "On %s, %s %s from " % (date, first, last)
 		if state in choices:
-			str2 = "an unknown state said: \n\n%s" % quote
+			str2 = "an unknown state said: \n\n%s" % '\n\n'.join(quote)
 		else:
-			str2 = "%s said:\n\n%s" % (state, quote)
-		self.data = str1 + str2
+			str2 = "%s said:\n\n%s" % (state, '\n\n'.join(quote))
+		self.data = (str1 + str2).split('\n')
+		self.print_v = str1 + str2
 	def __repr__(self):
 		if self.last in ["None", None, "null"]:
 			string = "<Statement 'Anonymous'>"
@@ -39,11 +40,14 @@ urls = {
 	"world": "https://news.google.com/news/section?pz=1&cf=all&topic=w&siidp=d0efb8be4bc7ba6cc8df32977c99fad01f8b",
 	"us": "https://news.google.com/news/section?pz=1&cf=all&topic=n&siidp=d0efb8be4bc7ba6cc8df32977c99fad01f8b",
 	"business": "https://news.google.com/news/section?pz=1&cf=all&topic=b&siidp=d0efb8be4bc7ba6cc8df32977c99fad01f8b",
+	"entertainment": "https://news.google.com/news/section?pz=1&cf=all&topic=e&siidp=df2ca71c8c66d6de2740fe990f310a585159&ict=ln",
+	"sports": "https://news.google.com/news/section?pz=1&cf=all&topic=s&siidp=8ee0c495033e0b8db8248317af6767f35d79&ict=ln"
 }
 
 topics = {}
 
 for i in urls.keys():
+	sleep(1)
 	link = urls[i]
 	page = requests.get(link)
 	html = page.content
@@ -63,7 +67,6 @@ for i in urls.keys():
 
 query_params = {
 	'apikey': 'cc6a5b98c9f6426584c174bc737776c0',
-	'per-page': 5,
 	'sort': 'date desc'
 }
 
@@ -82,7 +85,7 @@ for i in topics.keys():
 				first = z["speaker_first"]
 				last = z["speaker_last"]
 				state = z["speaker_state"]
-				quote = "\n\n".join(z["speaking"])
+				quote = z["speaking"]
 				c_url = z["capitolwords_url"]
 				o_url = z["origin_url"]
 				
@@ -91,5 +94,3 @@ for i in topics.keys():
 				obj = None
 	
 			topics[i][x].append(obj)
-
-
